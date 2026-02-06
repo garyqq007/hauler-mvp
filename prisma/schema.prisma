@@ -8,15 +8,19 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(uuid())
-  email     String   @unique
-  password  String
-  name      String?
-  role      Role     @default(CUSTOMER)
-  abn       String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  orders    Order[]  @relation("UserOrders")
+  id           String   @id @default(uuid())
+  email        String   @unique
+  password     String
+  name         String?
+  role         Role     @default(CUSTOMER)
+  abn          String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  // 关联字段（反向关系）
+  orders       Order[]  @relation("UserOrders")         // 对应 Order.customer
+  driverOrders Order[]  @relation("UserDriverOrders")   // 对应 Order.driver
+  vehicles     Vehicle[] @relation("UserVehicles")      // 对应 Vehicle.driver
 }
 
 model Vehicle {
@@ -25,7 +29,8 @@ model Vehicle {
   type      VehicleType
   plate     String?
   createdAt DateTime @default(now())
-  driver    User     @relation(fields: [driverId], references: [id])
+
+  driver    User     @relation("UserVehicles", fields: [driverId], references: [id])
 }
 
 model Order {
@@ -42,8 +47,9 @@ model Order {
   status        OrderStatus @default(CREATED)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
+
   customer      User        @relation("UserOrders", fields: [customerId], references: [id])
-  driver        User?       @relation(fields: [driverId], references: [id])
+  driver        User?       @relation("UserDriverOrders", fields: [driverId], references: [id])
 }
 
 enum Role {
