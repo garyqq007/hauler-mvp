@@ -1,10 +1,12 @@
 import express from "express";
 import bodyParser from "body-parser";
+import cors from "cors";
 import authRoutes from "./routes/auth";
 import orderRoutes from "./routes/orders";
 import adminRoutes from "./routes/admin";
 
 const app = express();
+app.use(cors());
 app.use(bodyParser.json());
 
 app.use("/api/auth", authRoutes);
