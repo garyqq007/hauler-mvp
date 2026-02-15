@@ -1,10 +1,9 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import {
-  createOrder,
-  getMyCustomerOrders
-} from "../../lib/api";
+import {createOrder,getMyCustomerOrders} from "../../lib/api";
+import AuthGuard from "../../components/AuthGuard";
+
 
 export default function CustomerPage() {
   const [pickupLat, setPickupLat] = useState("");
@@ -46,8 +45,24 @@ export default function CustomerPage() {
   }
 
   return (
+    <AuthGuard allowedRole="CUSTOMER">
     <div style={{ padding: 40 }}>
       <h1>Customer Dashboard</h1>
+    
+    <br /><br />
+    
+    <button
+       onClick={() => {
+       localStorage.removeItem("token");
+       localStorage.removeItem("role");
+       window.location.href = "/"; }
+       }
+       style={{ marginBottom: 20 }}
+    >
+       Logout
+    </button>
+     
+    <br /><br />
 
       <h2>Create Order</h2>
 
@@ -108,5 +123,6 @@ export default function CustomerPage() {
         </div>
       ))}
     </div>
+    </AuthGuard>
   );
 }

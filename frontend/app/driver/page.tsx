@@ -1,12 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import {
-  getOpenOrders,
-  getMyOrders,
-  acceptOrder,
-  updateOrderStatus
-} from "../../lib/api";
+import { getOpenOrders,getMyOrders,acceptOrder,updateOrderStatus} from "../../lib/api";
+import AuthGuard from "../../components/AuthGuard";
 
 export default function DriverPage() {
   const [openOrders, setOpenOrders] = useState<any[]>([]);
@@ -47,9 +43,22 @@ export default function DriverPage() {
   }
 
   return (
+    <AuthGuard allowedRole="DRIVER">
     <div style={{ padding: 40 }}>
       <h1>Driver Dashboard</h1>
-
+      <br /><br />
+      <button
+       onClick={() => {
+       localStorage.removeItem("token");
+       localStorage.removeItem("role");
+       window.location.href = "/"; }
+       }
+       style={{ marginBottom: 20 }}
+       >
+       Logout
+    </button>
+     
+    <br /><br />
       {error && <p style={{ color: "red" }}>{error}</p>}
 
       <h2>Open Orders</h2>
@@ -102,5 +111,6 @@ export default function DriverPage() {
         </div>
       ))}
     </div>
+    </AuthGuard>
   );
 }
