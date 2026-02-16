@@ -1,24 +1,29 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { getOpenOrders, getMyOrders, acceptOrder, updateOrderStatus } from "../../lib/api";
+//import { getOpenOrders, getMyOrders, acceptOrder, updateOrderStatus } from "../../lib/api";
 import AuthGuard from "../../components/AuthGuard";
 import AdminLayout from "../../components/AdminLayout";
 import StatusBadge from "../../components/StatusBadge";
+import { getOpenOrders, getMyActiveOrders, getMyHistoryOrders, acceptOrder, updateOrderStatus } from "../../lib/api";
+
 
 
 
 export default function DriverPage() {
   const [openOrders, setOpenOrders] = useState<any[]>([]);
-  const [myOrders, setMyOrders] = useState<any[]>([]);
+  const [activeOrders, setActiveOrders] = useState<any[]>([]);
+  const [historyOrders, setHistoryOrders] = useState<any[]>([]);
   const [error, setError] = useState("");
 
   async function fetchAll() {
     try {
       const open = await getOpenOrders();
-      const mine = await getMyOrders();
+      const active = await getMyActiveOrders();
+      const history = await getMyHistoryOrders();
       setOpenOrders(open);
-      setMyOrders(mine);
+      setActiveOrders(active);
+      setHistoryOrders(history);
     } catch (err) {
       setError("Failed to load orders");
     }
@@ -73,10 +78,10 @@ export default function DriverPage() {
           </div>
         ))}
 
-        <h2 style={{ marginTop: 40 }}>My Orders</h2>
-        {myOrders.length === 0 && <p>No active orders</p>}
+        <h2 style={{ marginTop: 40 }}>Active Orders</h2>
+        {activeOrders.length === 0 && <p>No active orders</p>}
 
-        {myOrders.map((order) => (
+        {activeOrders.map((order) => (
           <div
             key={order.id}
             style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}
@@ -107,6 +112,21 @@ export default function DriverPage() {
             )}
           </div>
         ))}
+
+        <h2 style={{ marginTop: 40 }}>Completed Orders</h2>
+        {historyOrders.length === 0 && <p>No completed orders</p>}
+
+        {historyOrders.map((order) => (
+          <div key={order.id} style={{ border: "1px solid #ccc", padding: 10, marginBottom: 10 }}>
+            <p>ID: {order.id}</p>
+            <div style={{ marginBottom: 6 }}>
+              Status: <StatusBadge status={order.status} />
+            </div>
+            <p>Vehicle: {order.vehicleType}</p>
+            <p>Price: ${order.priceCents / 100}</p>
+          </div>
+        ))}
+
       </AdminLayout>
     </AuthGuard>
   );

@@ -33,8 +33,8 @@ router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
   res.json(order);
 });
 
-// Driver: get my accepted orders
-router.get("/my", auth(["DRIVER"]), async (req: any, res) => {
+// Driver: get my active accepted orders
+router.get("/my-active", auth(["DRIVER"]), async (req: any, res) => {
   const orders = await prisma.order.findMany({
     where: {
       driverId: req.user.id,
@@ -50,11 +50,12 @@ router.get("/my", auth(["DRIVER"]), async (req: any, res) => {
   res.json(orders);
 });
 
-// Customer: get my orders
-router.get("/my-customer", auth(["CUSTOMER"]), async (req: any, res) => {
+//Driver: get my history finish orders 
+router.get("/my-history", auth(["DRIVER"]), async (req: any, res) => {
   const orders = await prisma.order.findMany({
     where: {
-      customerId: req.user.id
+      driverId: req.user.id,
+      status: "DELIVERED"
     },
     orderBy: {
       createdAt: "desc"
@@ -63,7 +64,6 @@ router.get("/my-customer", auth(["CUSTOMER"]), async (req: any, res) => {
 
   res.json(orders);
 });
-
 
 router.get("/open", auth(["DRIVER"]), async (_, res) => {
   const orders = await prisma.order.findMany({

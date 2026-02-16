@@ -72,7 +72,37 @@ export async function acceptOrder(orderId: string) {
   return res.json();
 }
 
-//司机查看自己订单情况
+//司机查看自己 active 订单情况
+export async function getMyActiveOrders() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/api/orders/my-active`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch active orders");
+
+  return res.json();
+}
+
+//司机查看自己 history 已完成 订单情况
+export async function getMyHistoryOrders() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/api/orders/my-history`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch history orders");
+
+  return res.json();
+}
+
+//
 export async function getMyOrders() {
   const token = localStorage.getItem("token");
 
