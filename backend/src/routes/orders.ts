@@ -33,6 +33,21 @@ router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
   res.json(order);
 });
 
+//Customer: get my order
+router.get("/my-customer", auth(["CUSTOMER"]), async (req: any, res) => {
+  const orders = await prisma.order.findMany({
+    where: {
+      customerId: req.user.id
+    },
+    orderBy: {
+      createdAt: "desc"
+    }
+  });
+
+  res.json(orders);
+});
+
+
 // Driver: get my active accepted orders
 router.get("/my-active", auth(["DRIVER"]), async (req: any, res) => {
   const orders = await prisma.order.findMany({

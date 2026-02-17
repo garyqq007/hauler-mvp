@@ -28,7 +28,7 @@ export default function AdminLayout({
                 color: "white",
                 padding: 20
             }}>
-                <h2 style={{ marginBottom: 30 }}>Hauler</h2>
+                <h2 style={{ marginBottom: 30 }}>Cargo-Go</h2>
 
                 <div
                     style={{ marginBottom: 15, cursor: "pointer" }}
