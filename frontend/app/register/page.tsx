@@ -10,11 +10,25 @@ export default function RegisterPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
   const [name, setName] = useState("");
   const [role, setRole] = useState("CUSTOMER");
   const [error, setError] = useState("");
 
   async function handleRegister() {
+    
+    setError("");
+
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
+    if (password.length < 6) {
+      setError("Password must be at least 6 characters");
+      return;
+    }
+
     try {
       const data = await register({
         email,
@@ -81,6 +95,15 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           style={inputStyle}
         />
+
+        <input
+          type="password"
+          placeholder="Confirm Password"
+          value={confirmPassword}
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          style={inputStyle}
+        />
+
 
         <select
           value={role}

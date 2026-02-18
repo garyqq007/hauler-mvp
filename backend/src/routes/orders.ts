@@ -2,18 +2,20 @@ import express from "express";
 import { prisma } from "../prismaClient";
 import { haversineKm, calcPriceCents } from "../utils/price";
 import { auth } from "../middleware/auth";
+import { getDrivingDistanceKm } from "../utils/google";
 
 const router = express.Router();
 
 router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
   const { pickupLat, pickupLng, dropoffLat, dropoffLng, vehicleType } = req.body;
 
-  const distanceKm = haversineKm(
+  const distanceKm = await getDrivingDistanceKm(
     pickupLat,
     pickupLng,
     dropoffLat,
     dropoffLng
   );
+
 
   const priceCents = calcPriceCents(distanceKm, vehicleType);
 
