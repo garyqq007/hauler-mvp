@@ -17,7 +17,7 @@ export async function login(email: string, password: string) {
   return res.json();
 }
 
-//创建订单
+//用户创建订单
 export async function createOrder(orderData: any) {
   const token = localStorage.getItem("token");
 
@@ -37,7 +37,55 @@ export async function createOrder(orderData: any) {
   return res.json();
 }
 
-//查看开放订单
+//customer查看自己全部订单
+//export async function getMyCustomerOrders() {
+  //const token = localStorage.getItem("token");
+
+  //const res = await fetch(`${BASE_URL}/api/orders/my-customer`, {
+    //headers: {
+      //"Authorization": `Bearer ${token}`
+    //}
+  //});
+
+  //if (!res.ok) {
+    //throw new Error("Failed to fetch customer orders");
+  //}
+
+  //return res.json();
+//}
+
+//用户查看自己active订单
+export async function getMyActiveCustomerOrders() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/api/orders/my-active-customer`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch active orders");
+
+  return res.json();
+}
+
+//用户查看自己已完成订单
+export async function getMyHistoryCustomerOrders() {
+  const token = localStorage.getItem("token");
+
+  const res = await fetch(`${BASE_URL}/api/orders/my-history-customer`, {
+    headers: {
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!res.ok) throw new Error("Failed to fetch history orders");
+
+  return res.json();
+}
+
+
+//司机查看开放订单
 export async function getOpenOrders() {
   const token = localStorage.getItem("token");
 
@@ -156,22 +204,6 @@ export async function register(userData: any) {
   return res.json();
 }
 
-//用户查看自己订单
-export async function getMyCustomerOrders() {
-  const token = localStorage.getItem("token");
-
-  const res = await fetch(`${BASE_URL}/api/orders/my-customer`, {
-    headers: {
-      "Authorization": `Bearer ${token}`
-    }
-  });
-
-  if (!res.ok) {
-    throw new Error("Failed to fetch customer orders");
-  }
-
-  return res.json();
-}
 
 
 

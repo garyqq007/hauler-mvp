@@ -1,12 +1,10 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createOrder, getMyCustomerOrders } from "../../lib/api";
+import { createOrder, getMyActiveCustomerOrders } from "../../lib/api";
 import AuthGuard from "../../components/AuthGuard";
 import AdminLayout from "../../components/AdminLayout";
 import StatusBadge from "../../components/StatusBadge";
-
-
 
 export default function CustomerPage() {
   const [pickupLat, setPickupLat] = useState("");
@@ -15,17 +13,19 @@ export default function CustomerPage() {
   const [dropoffLng, setDropoffLng] = useState("");
   const [vehicleType, setVehicleType] = useState("SMALL");
 
-  const [orders, setOrders] = useState<any[]>([]);
+  //const [orders, setOrders] = useState<any[]>([]);
+  const [activeOrders, setActiveOrders] = useState<any[]>([]);
   const [error, setError] = useState("");
 
   async function fetchOrders() {
     try {
-      const data = await getMyCustomerOrders();
-      setOrders(data);
+      const data = await getMyActiveCustomerOrders();
+      setActiveOrders(data);
     } catch (err) {
       setError("Failed to load orders");
     }
   }
+
 
   useEffect(() => {
     fetchOrders();
@@ -90,29 +90,21 @@ export default function CustomerPage() {
           Create Order
         </button>
 
-        <h2 style={{ marginTop: 40 }}>My Orders</h2>
+        <h2 style={{ marginTop: 40 }}>Active Orders</h2>
 
-        {error && <p style={{ color: "red" }}>{error}</p>}
+        {activeOrders.length === 0 && <p>No active orders</p>}
 
-        {orders.length === 0 && <p>No orders yet</p>}
-
-        {orders.map((order) => (
-          <div
-            key={order.id}
-            style={{
-              border: "1px solid #ccc",
-              padding: 10,
-              marginBottom: 10
-            }}
-          >
+        {activeOrders.map((order) => (
+          <div key={order.id} style={{ marginBottom: 12 }}>
             <p>ID: {order.id}</p>
-            <div style={{ marginBottom: 6 }}>
+            <div>
               Status: <StatusBadge status={order.status} />
             </div>
             <p>Vehicle: {order.vehicleType}</p>
             <p>Price: ${order.priceCents / 100}</p>
           </div>
         ))}
+
       </AdminLayout>
     </AuthGuard>
   );
