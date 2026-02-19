@@ -16,6 +16,9 @@ export default function CustomerPage() {
   const [dropoffLat, setDropoffLat] = useState<number | null>(null);
   const [dropoffLng, setDropoffLng] = useState<number | null>(null);
 
+  const [pickupAddress, setPickupAddress] = useState("");
+  const [dropoffAddress, setDropoffAddress] = useState("");
+
   const [vehicleType, setVehicleType] = useState("SMALL");
   const [activeOrders, setActiveOrders] = useState<any[]>([]);
   const [error, setError] = useState("");
@@ -38,6 +41,7 @@ export default function CustomerPage() {
       if (location) {
         setPickupLat(location.lat());
         setPickupLng(location.lng());
+        setPickupAddress(place.formatted_address || "");
       }
     });
 
@@ -55,6 +59,7 @@ export default function CustomerPage() {
       if (location) {
         setDropoffLat(location.lat());
         setDropoffLng(location.lng());
+        setDropoffAddress(place.formatted_address || "");
       }
     });
 
@@ -85,6 +90,8 @@ export default function CustomerPage() {
 
     try {
       await createOrder({
+        pickupAddress,
+        dropoffAddress,
         pickupLat,
         pickupLng,
         dropoffLat,
@@ -137,15 +144,50 @@ export default function CustomerPage() {
         {activeOrders.length === 0 && <p>No active orders</p>}
 
         {activeOrders.map((order) => (
-          <div key={order.id} style={{ marginBottom: 16 }}>
-            <p>ID: {order.id}</p>
-            <div>
+          <div
+            key={order.id}
+            style={{
+              background: "#ffffff",
+              padding: 20,
+              borderRadius: 12,
+              boxShadow: "0 4px 12px rgba(0,0,0,0.06)",
+              marginBottom: 20,
+              borderLeft:
+                order.status === "DELIVERED"
+                  ? "6px solid #16a34a"
+                  : order.status === "ON_THE_WAY"
+                    ? "6px solid #2563eb"
+                    : order.status === "ACCEPTED"
+                      ? "6px solid #7c3aed"
+                      : "6px solid #9ca3af"
+            }}
+          >
+            <div style={{ marginBottom: 8, fontWeight: 600 }}>
+              Order ID: {order.id}
+            </div>
+
+            <div style={{ marginBottom: 6 }}>
+              <strong>Pickup:</strong> {order.pickupAddress}
+            </div>
+
+            <div style={{ marginBottom: 6 }}>
+              <strong>Dropoff:</strong> {order.dropoffAddress}
+            </div>
+
+            <div style={{ marginBottom: 6 }}>
               Status: <StatusBadge status={order.status} />
             </div>
-            <p>Vehicle: {order.vehicleType}</p>
-            <p>Price: ${(order.priceCents / 100).toFixed(2)}</p>
+
+            <div style={{ marginBottom: 6 }}>
+              Distance: {order.distanceKm?.toFixed(1)} km
+            </div>
+
+            <div style={{ fontWeight: 600 }}>
+              Price: ${(order.priceCents / 100).toFixed(2)}
+            </div>
           </div>
         ))}
+
 
       </AdminLayout>
     </AuthGuard>

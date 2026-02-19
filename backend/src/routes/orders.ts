@@ -7,7 +7,7 @@ import { getDrivingDistanceKm } from "../utils/google";
 const router = express.Router();
 
 router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
-  const { pickupLat, pickupLng, dropoffLat, dropoffLng, vehicleType } = req.body;
+  const { pickupLat, pickupLng, dropoffLat, dropoffLng, pickupAddress, dropoffAddress, vehicleType } = req.body;
 
   const distanceKm = await getDrivingDistanceKm(
     pickupLat,
@@ -22,6 +22,8 @@ router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
   const order = await prisma.order.create({
     data: {
       customerId: req.user.id,
+      pickupAddress,
+      dropoffAddress,
       pickupLat,
       pickupLng,
       dropoffLat,

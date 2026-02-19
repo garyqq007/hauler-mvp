@@ -37,14 +37,20 @@ model Order {
   id            String      @id @default(uuid())
   customerId    String
   driverId      String?
+
+  pickupAddress   String
+  dropoffAddress  String
+
   pickupLat     Float
   pickupLng     Float
   dropoffLat    Float
   dropoffLng    Float
+
   vehicleType   VehicleType
   distanceKm    Float?
   priceCents    Int?
   status        OrderStatus @default(CREATED)
+
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
