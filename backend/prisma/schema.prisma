@@ -54,6 +54,11 @@ model Order {
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
 
+  acceptedAt        DateTime?
+  pickupStartedAt   DateTime?
+  dropoffStartedAt  DateTime?
+  deliveredAt       DateTime?
+
   customer      User        @relation("UserOrders", fields: [customerId], references: [id])
   driver        User?       @relation("UserDriverOrders", fields: [driverId], references: [id])
 }
@@ -73,7 +78,8 @@ enum VehicleType {
 enum OrderStatus {
   CREATED
   ACCEPTED
-  ON_THE_WAY
+  EN_ROUTE_TO_PICKUP
+  EN_ROUTE_TO_DROPOFF
   DELIVERED
-  CANCELLED
 }
+

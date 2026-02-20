@@ -30,6 +30,15 @@ export default function HistoryPage() {
             <div>
               Status: <StatusBadge status={order.status} />
             </div>
+
+            <div style={{ marginBottom: 6 }}>
+              <strong>Pickup:</strong> {order.pickupAddress}
+            </div>
+
+            <div style={{ marginBottom: 6 }}>
+              <strong>Dropoff:</strong> {order.dropoffAddress}
+            </div>
+
             <p>Vehicle: {order.vehicleType}</p>
             <p>Distance: {order.distanceKm?.toFixed(2)} km</p>
             <p>Total: ${(order.priceCents / 100).toFixed(2)}</p>

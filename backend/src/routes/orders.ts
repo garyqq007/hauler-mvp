@@ -6,16 +6,21 @@ import { getDrivingDistanceKm } from "../utils/google";
 
 const router = express.Router();
 
+//Customer: create order
 router.post("/", auth(["CUSTOMER"]), async (req: any, res) => {
   const { pickupLat, pickupLng, dropoffLat, dropoffLng, pickupAddress, dropoffAddress, vehicleType } = req.body;
+  
+  //console.log("pickup:", pickupLat, pickupLng);
+  //console.log("dropoff:", dropoffLat, dropoffLng);
 
   const distanceKm = await getDrivingDistanceKm(
-    pickupLat,
-    pickupLng,
-    dropoffLat,
-    dropoffLng
-  );
+  Number(pickupLat),
+  Number(pickupLng),
+  Number(dropoffLat),
+  Number(dropoffLng)
+);
 
+//console.log("distance:", distanceKm);
 
   const priceCents = calcPriceCents(distanceKm, vehicleType);
 
@@ -57,7 +62,7 @@ router.get("/my-active-customer", auth(["CUSTOMER"]), async (req: any, res) => {
     where: {
       customerId: req.user.id,
       status: {
-        in: ["CREATED", "ACCEPTED", "ON_THE_WAY"]
+        in: ["CREATED", "ACCEPTED", "EN_ROUTE_TO_PICKUP", "EN_ROUTE_TO_DROPOFF"]
       }
     },
     orderBy: {
@@ -90,7 +95,7 @@ router.get("/my-active", auth(["DRIVER"]), async (req: any, res) => {
     where: {
       driverId: req.user.id,
       status: {
-        in: ["ACCEPTED", "ON_THE_WAY"]
+        in: ["ACCEPTED", "EN_ROUTE_TO_PICKUP", "EN_ROUTE_TO_DROPOFF"]
       }
     },
     orderBy: {
@@ -123,6 +128,7 @@ router.get("/open", auth(["DRIVER"]), async (_, res) => {
   res.json(orders);
 });
 
+//driver accept order
 router.post("/:id/accept", auth(["DRIVER"]), async (req: any, res) => {
   const order = await prisma.order.findUnique({
     where: { id: req.params.id }
@@ -133,12 +139,13 @@ router.post("/:id/accept", auth(["DRIVER"]), async (req: any, res) => {
 
   const updated = await prisma.order.update({
     where: { id: order.id },
-    data: { status: "ACCEPTED", driverId: req.user.id }
+    data: { status: "ACCEPTED", driverId: req.user.id, acceptedAt: new Date() }
   });
 
   res.json(updated);
 });
 
+//driver update order status
 router.post("/:id/status", auth(["DRIVER"]), async (req: any, res) => {
   const { status } = req.body;
   const order = await prisma.order.findUnique({
@@ -149,16 +156,39 @@ router.post("/:id/status", auth(["DRIVER"]), async (req: any, res) => {
     return res.status(403).json({ error: "Forbidden" });
 
   const flow: any = {
-    ACCEPTED: ["ON_THE_WAY"],
-    ON_THE_WAY: ["DELIVERED"]
+    ACCEPTED: ["EN_ROUTE_TO_PICKUP"],
+    EN_ROUTE_TO_PICKUP: ["EN_ROUTE_TO_DROPOFF"],
+    EN_ROUTE_TO_DROPOFF: ["DELIVERED"]
   };
 
   if (!flow[order.status]?.includes(status))
     return res.status(400).json({ error: "Invalid transition" });
 
+  //const updated = await prisma.order.update({
+  //where: { id: order.id },
+  //data: { status }
+  //});
+  let updateData: any = { status };
+
+  if (status === "ACCEPTED") {
+    updateData.acceptedAt = new Date();
+  }
+
+  if (status === "EN_ROUTE_TO_PICKUP") {
+    updateData.pickupStartedAt = new Date();
+  }
+
+  if (status === "EN_ROUTE_TO_DROPOFF") {
+    updateData.dropoffStartedAt = new Date();
+  }
+
+  if (status === "DELIVERED") {
+    updateData.deliveredAt = new Date();
+  }
+
   const updated = await prisma.order.update({
     where: { id: order.id },
-    data: { status }
+    data: updateData
   });
 
   res.json(updated);

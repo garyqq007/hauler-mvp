@@ -18,12 +18,14 @@ export default function LoginPage() {
 
       localStorage.setItem("token", data.token);
       localStorage.setItem("role", data.user.role);
+      localStorage.setItem("name", data.user.name || "");
 
       if (data.user.role === "CUSTOMER") {
         router.push("/customer");
       } else {
         router.push("/driver");
       }
+
 
     } catch {
       setError("Invalid email or password");

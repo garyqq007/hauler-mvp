@@ -6,6 +6,12 @@ import AuthGuard from "../../components/AuthGuard";
 import AdminLayout from "../../components/AdminLayout";
 import StatusBadge from "../../components/StatusBadge";
 
+declare global {
+  interface Window {
+    google: any;
+  }
+}
+
 export default function CustomerPage() {
 
   const pickupRef = useRef<HTMLInputElement>(null);
@@ -21,10 +27,14 @@ export default function CustomerPage() {
 
   const [vehicleType, setVehicleType] = useState("SMALL");
   const [activeOrders, setActiveOrders] = useState<any[]>([]);
+
+  //const [name, setName] = useState("");
+
   const [error, setError] = useState("");
 
   // 🔵 初始化 Google Autocomplete
   useEffect(() => {
+
     if (!window.google) return;
 
     const pickupAutocomplete = new window.google.maps.places.Autocomplete(
@@ -107,7 +117,7 @@ export default function CustomerPage() {
 
   return (
     <AuthGuard allowedRole="CUSTOMER">
-      <AdminLayout title="Customer Dashboard">
+      <AdminLayout title="Customer Dashboard" >
 
         <h2>Create Order</h2>
 
@@ -162,9 +172,15 @@ export default function CustomerPage() {
                       : "6px solid #9ca3af"
             }}
           >
-            <div style={{ marginBottom: 8, fontWeight: 600 }}>
-              Order ID: {order.id}
+            <div style={{
+              marginBottom: 8,
+              fontWeight: 600,
+              fontSize: 14,
+              color: "#374151"
+            }}>
+              Order #{order.id.slice(0, 8).toUpperCase()}
             </div>
+
 
             <div style={{ marginBottom: 6 }}>
               <strong>Pickup:</strong> {order.pickupAddress}

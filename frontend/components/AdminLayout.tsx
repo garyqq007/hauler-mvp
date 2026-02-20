@@ -100,14 +100,22 @@ export default function AdminLayout({
             borderBottom: "1px solid #e5e7eb"
           }}
         >
-          <h1
+          <div
             style={{
-              color: "#111827",
-              fontWeight: 600
+              marginTop: 2,
+              display: "inline-block",
+              padding: "6px 14px",
+              background: "#e0f2fe",
+              borderRadius: 20,
+              fontSize: 14,
+              fontWeight: 600,
+              color: "#0369a1"
             }}
           >
-            {title}
-          </h1>
+            Hello, {localStorage.getItem("name")} 👋
+          </div>
+
+
 
           <button
             onClick={logout}
